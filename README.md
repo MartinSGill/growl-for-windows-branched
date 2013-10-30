@@ -1,2 +1,2 @@
-grrowl-for-windows-branched
+growl-for-windows-branched
 ===========================
