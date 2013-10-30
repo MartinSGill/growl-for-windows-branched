@@ -1,0 +1,174 @@
+<html>
+    <head>
+        <script src="growl.js"></script>
+
+        <link rel="stylesheet" href="/gfw/reset.css" media="all">
+        <link rel="stylesheet" href="/gfw/style.css" media="all">
+        <link rel="stylesheet" href="/gfw/help/help.css" media="all">
+
+        <style>
+        #notifyarea {display:none;}
+        button {background-color:#eeeeee;
+            border-color:#CCCCCC rgb(153, 153, 153) rgb(153, 153, 153) rgb(204, 204, 204);
+            border-style:double;
+            border-width:3px;
+            color:#777777;
+            cursor:pointer;
+            font-size:1.2em;
+            font-weight:bold;
+            padding:0 20px;
+            x-min-width:160px;
+            _width:160px;}
+        input, textarea {width:320px;}
+        </style>
+    </head>
+    
+    <body>
+        <div id="page">
+            <div id="header">
+                <h1 id="title">Growl for Windows</h1>
+                <h2 id="tagline">Know What Happens</h2>
+            </div>
+
+            <div id="content">
+                <div class="section">
+                    <h3>Growl for Windows - Javascript Connector Example</h3>
+                    <hr />
+                    
+                    <p>&nbsp;</p>
+                    
+                    <p>This example requires Growl for Windows v2.0 or higher.</p>
+                    
+                    <p>Make sure Growl for Windows is running and that 'Allow network notifications' and 'Allow notifications
+                    from websites' are check on the 'Security' tab.</p>
+                    
+                    <p>&nbsp;</p>
+                    
+                    <p><button onclick="register();return false;">register</button></p>
+                    
+                    <p>&nbsp;</p>
+                    
+                    <div id="notifyarea">
+                        notification title:<br />
+                        <input type="text" id="notificationtitle" value="test notification" /><br /><br />
+                        
+                        notification text:<br />
+                        <textarea id="notificationtext">you got notified</textarea><br /><br />
+                        
+                        <p>
+                            <button onclick="notify();return false;">notify</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button onclick="notify2();return false;">notify (w/ callback)</button>
+                        </p>
+                    </div>
+
+                    <div id="growlconnectorcontainer"></div>
+                </div>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+        var isGrowlRunning = false;
+        
+        function register(){
+            var application = new Growl.Application();
+            application.name = "Javascript Example App";
+            application.icon = "http://www.growlforwindows.com/gfw/examples/js/growl.png";
+            
+            var notificationTypes = new Array();
+            var nt1 = new Growl.NotificationType();
+            nt1.name = "NT1";
+            nt1.displayName = "Example Notification One";
+            nt1.enabled = true;
+            notificationTypes.push(nt1);
+            
+            Growl.register(application, notificationTypes);
+            
+            document.getElementById("notifyarea").style.display = "block";
+        }
+        
+        function notify(){
+            var notification = new Growl.Notification();
+            notification.name = "NT1";
+            notification.title = document.getElementById("notificationtitle").value;
+            notification.text = document.getElementById("notificationtext").value;
+            notification.icon = "http://www.growlforwindows.com/gfw/examples/js/growl.png";
+            notification.priority = "normal";
+            
+            Growl.notify("Javascript Example App", notification);
+        }
+
+        function notify2(){
+            var notification = new Growl.Notification();
+            notification.name = "NT1";
+            notification.title = document.getElementById("notificationtitle").value;
+            notification.text = document.getElementById("notificationtext").value;
+            notification.icon = "http://www.growlforwindows.com/gfw/examples/js/growl.png";
+            notification.priority = "normal";
+            notification.callback.context = "my context";
+            notification.callback.type = "string";
+            
+            Growl.notify("Javascript Example App", notification);
+        }
+        </script>
+
+        <script type="text/javascript">
+        window.onload = function(){
+            var config = {};
+            //config.scope = "Growl"; //optional
+            //config.containerID = null; //optional
+
+            //config.password = "secret";
+
+            //config.passwordHashAlgorithm = Growl.PasswordHashAlgorithm.SHA1;
+            //config.passwordHashAlgorithm = Growl.PasswordHashAlgorithm.SHA256;
+
+            //config.encryptionAlgorithm = Growl.EncryptionAlgorithm.PlainText;
+            //config.encryptionAlgorithm = Growl.EncryptionAlgorithm.DES;
+            //config.encryptionAlgorithm = Growl.EncryptionAlgorithm.TripleDES;
+            //config.encryptionAlgorithm = Growl.EncryptionAlgorithm.AES;
+
+            config.oncallback = cb;
+            config.onerror = onerror;
+            config.onok = onok;
+            Growl.init(config);
+        }
+        
+        function cb(notificationID, action, context, type, timestamp){
+            //if(action == Growl.CallbackAction.Click) alert("the notification was clicked");
+
+            var s = "";
+            s += "id: " + notificationID + "\r\n";
+            s += "action: " + action + "\r\n";
+            s += "context: " + context + "\r\n";
+            s += "type: " + type + "\r\n";
+            s += "timestamp: " + timestamp + "\r\n";
+            alert(s);
+        }
+        
+        function onerror(errorCode, errorDescription){
+            alert("ERROR:\r\n\r\n" + errorCode + " - " + errorDescription);
+        }
+        
+        function onok(){
+            if(!isGrowlRunning){
+                alert("ok");
+                isGrowlRunning = true;
+            }
+        }
+        
+        /*
+        Growl.onconnect = function(){alert("onconnect")};
+		Growl.ondisconnect = function(){alert("ondisconnect")};
+		Growl.ondata = function(){alert("ondata")};
+		Growl.onioerror = function(){alert("onioerror")};
+		Growl.onsecurityerror = function(){alert("onsecurityerror")};
+		Growl.onprogressevent = function(){alert("onprogressevent")};
+		Growl.onok = function(){alert("onok")};
+		Growl.oncallback = function(){alert("oncallback")};
+		Growl.onerror = function(){alert("onerror")};
+		*/
+        
+        </script>
+    </body>
+</html>

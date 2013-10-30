@@ -1,0 +1,459 @@
+v.NEXT
+------------------------------
+- expanded width of title & text display fields in Visor display so that all text was not bunched up in the left corner on very wide screens
+
+
+2.0.9 changes (v2.0.9.1)
+------------------------------
+- set NoImpersonate flag on custom installer actions (in hopes of avoiding some 2869 errors) - http://blogs.msdn.com/b/astebner/archive/2006/10/23/mailbag-how-to-set-the-noimpersonate-flag-for-a-custom-action-in-visual-studio-2005.aspx
+- merged setup.exe and Growl.msi into a single GrowlInstaller.exe self-extracting file
+- added coalescing support to native Plain, Smokestack, and Standard displays (queueing displays such as Toast and Visor do not support coalescing)
+- fixed issue where application icon and default notification type icon were not updated if they were currently selected in the UI when a re-register request came in
+- fixed issue where application was cut-off if it was longer than one line (on Applications tab)
+- Growl now saves forwarder/subscription pref changes to disk immediately instead of only when Growl exits
+- fixed issue where settings specified in growl.exe.config were not honored on the first run
+- updated iTunes plugin to support coalescing (one notification on screen at a time)
+
+2.0.8 changes (v2.0.8.1)
+------------------------------
+- updated all UI elements to work with various high-DPI settings (old style and new style, above and below 120dpi)
+- added ability to automatically pause Growl when another application is running fullscreen
+- updated Bonjour TXT data to include GNTP version and websocket supported version
+- better detection of another instance of Growl running in a separate user session
+- fixed errant extra trailing space in GNTP header line of unencrypted responses
+- fix for issue 37 (Could not created registry key for HKEY_USERS32\SID\Software\Classes) - changed installer to install for Everyone instead of Just Me
+- updated growlnotify to return an error code instead of always returning 0
+- added temporary workaround to enable forwarding to Growl on Mac (v1.3.1+) (unencrypted requests)
+
+2.0.7.2 changes (v2.0.7.2)
+------------------------------
+- fixed regression in UDP packet format ('flags' was coming through as 4 bytes instead of 2)
+
+2.0.7 changes (v2.0.7.1)
+------------------------------
+- updated all Growl claw icons to match new Mac icons
+- made History item text copyable (select item and then Ctrl-C)
+- created user-configurable setting for length of time to store history items (HistoryDaysToStore in user.config)
+- updated Websocket support to draft-ietf-hybi-thewebsocketprotocol-14 protocol version
+- fixed an issue where thumbnail images for old history items were not deleted from disk
+- fixed issues with Standard display that caused issues with high DPI settings
+- fixed a bug in Growl.Connector.dll that didnt handle newlines (\n) in callback data properly
+- released Notify My Android forwarder plugin
+- released Phony Balloony subscriber plugin (deprecated Phony Balloony stand-alone program)
+
+2.0.6 changes (v2.0.6.1)
+------------------------------
+- fixed a bug that could cause very long text with no spaces (such as urls) to be truncated in some displays
+- fixed a bug that caused auto-install links to not work properly when called from Opera
+- fixed a bug that caused UDP notifications to not get forwarded
+- released Boxcar subscription plugin and updated Boxcar forwarder plugin (to prevent loops)
+
+2.0.5 changes (v2.0.5.2)
+------------------------------
+- fixed a bug in the WebSocket handling of the WHATWG protocol (aka draft-hixie-thewebsocketprotocol-76)
+- fixed a bug that did not honor the 'Allow notifications from websites' preference (always allowed notifications)
+- fixed a bug that caused redraw artifacts when quickly scrolling the 'Applications' or 'Notifications' lists
+- fixed a bug that crashed GfW if you exited the app while it was turned off (not listening for notifications)
+- added ability to save preferred History view (Tile or Details)
+- changed socket handling so that all incoming data is read (even if cached resources are used). this works around an issue in Winsock that sends a RST if data is received after the socket input stream is shutdown or closed: http://groups.google.com/group/growl-for-windows/browse_thread/thread/2523afc60296594
+- fixed a concurrency bug that that occurred when many simultaneous notifications with no image were received at the same time (DefaultIcon contention)
+- fixed a concurrency bug that occurred when many simultaneous notifications that referenced the same cached binary resource were received at the same time
+- fixed a bug in Visor display that causes ampersands to render incorrectly (UseMnemonic)
+- added Toasty forwarder to forward to Windows Phones
+- released Notifo subscription plugin and updated Notifo forwarder plugin (to prevent loops) - thanks to Jonathan Yee
+
+2.0.4 changes (v2.0.4.2)
+------------------------------
+- fixed a bug in GrowlConnector that could cause a hang if the connection was lost in the middle of receiving a response
+- deprecated instance method GrowlConnector.IsGrowlRunning(); replaced with static GrowlConnector.IsGrowlRunningLocally()
+- updated GrowlConnector Register and Notify methods to accept a user-defined 'state' object that will get passed back in the response events (used to associate responses with requests)
+- updated Growl.Connector.Response class to include RequestData property (that data was formerly inaccessible from the response)
+- improvements to subscriptions to reduce number of renewal requests and updates of the UI
+- added /cmd:show switch to Growl.exe for launching Growl with the settings window open
+- added Detector.ShowSettingsWindow() method to launch Growl settings window from another application
+- added /ai switch to growlnotify to specify the application's icon when registering
+- added basis for WebSocket support as well as growlwebsocket.js client library. The only supported endpoint is: ws://localhost:23053/gntp
+- improved installation process for language packs on Vista/Win7 and other machines with UAC; now correctly automatically prompts to elevate privileges if required
+- removed ability to add new Twitter forwarding destinations (due to no workable oAuth/open source solution)
+- fixed a bug that caused redraw artifacts when quickly scrolling the 'Add Computer' list of forwarding options
+- fixed some rendering bugs in the History Details view
+- added Italian language translation (thanks to Umberto Nicoletti)
+
+2.0.3v2 changes (v2.0.3.5)
+------------------------------
+- fixed a bug in the IPv6 same-subnet handling
+
+2.0.3 changes (v2.0.3.4)
+------------------------------
+- added support for multiple monitors (Display SDK, built-in displays, and most additional displays)
+- added ability to allow LAN requests (same subnet) to be exempt from having to provide passwords
+- fixed a bug in GrowlConnector that caused intermittent notification loss (both from app and when forwarding over GNTP)
+- fixed a bug that caused the activity monitor (idle checking) to not start correctly if the settings form was never loaded
+- fixed Twitter forwarding regression (Expect100Continue header)
+- released Boxcar forwarding plugin
+
+
+2.0.2 changes (v2.0.2.8)
+------------------------------
+- improved initial startup time (should be <1 second for a standard installation)
+- reduced memory usage, both during normal operation and cumulatively after GfW has been running for a long time
+     (both of the above were partially an indirect result of decoupling the History from the main operation of the application)
+- loads of code cleanup (removing event handlers, better Dispose() operations, etc)
+- improved tab icons (less jaggy)
+- added support for data: URIs in *-Icon headers
+- added support for Forwarder and Subscriber plugins
+- added notify.io integration (via Subscriptions)
+- removed hidden splash screen (found the root cause of the bug that was requiring it)
+- improved debug information gathering
+- made a change so that registrations/notifications are no longer forwarded if they are disabled
+- changed auto-update check interval from 4 hours to 24 hours
+- fixed a bug that caused an additional -ERROR response to be sent after the last -OK or -CALLBACK response
+- fixed a bug that could cause loss of application preferences if specified display is no longer available
+- fixed a bug that could cause the (supposed to be hidden) splash screen to appear and hang the app
+- fixed a bug that could cause GfW to crash if the response to a check for update is missing or malformed
+- fixed a bug that prevented GfW from detecting when Bonjour-based forwards went offline (https://bugzilla.novell.com/show_bug.cgi?id=430732)
+- released Webhook Forwarder plugin
+- released RSS/Atom Feed Subscription plugin
+IMPORTANT UPGRADE NOTES: 
+- All history items will be cleared when upgrading to this version due to a change in how history notifications are serialized to disk
+- Additional displays will no longer be loaded from the program folder (ex: c:\Program Files\Growl\Displays); all additional displays must be installed in the one of the following locations:
+    User's personal folder: %USERPROFILE%\Local Settings\Application Data\Growl\2.0.0.0\Displays\
+    AllUser's folder: %ALLUSERSPROFILE%\Application Data\Growl\2.0.0.0\Displays\
+  (If the same display is found in both locations, the display in the user's personal folder takes precedence.)
+
+
+2.0.1 changes (v2.0.0.27)
+------------------------------
+- fixes a bug that caused GfW to not properly shutdown TCP socket connections
+- added support for '/silent:true' command-line switch (suppresses the 'Growl is running' notification)
+- added library support for updating (coalescing) existing notifications (library support only; built-in displays do not offer coalescing at this time)
+- added library support for pausing notifications on mouse hover (library support only; built-in displays do not offer pause-on-hover at this time)
+- Meter display (progress bar)
+- updated AIR/Flash/JS connector to fix a bug when reading bytes from response stream
+- updated VB/COM connector to work with non-typed languages (specifically, VBScript)
+
+2.0 Final changes (v2.0.0.25)
+------------------------------
+- fixed a regression that caused the same salt value to be used for all encrypted requests
+- smoother animation for many displays, including the built-in Visor and Toast displays
+- modified GrowlConnector to throw any exceptions encountered before the request is sent (it used to silently fail and incorrectly return 201 response)
+- updated growlnotify to not crash if the specified local image does not exist
+- created Growl for Windows 2.0 Redistributable (gfw2rdst.exe) for including GfW as a prerequisite in VS Setup projects
+
+RC4 changes
+------------------------------
+- updated the Origin-Software-Version header to return the specific file version (ie: 2.0.0.24 instead of 2.0.0.0)
+- updated Email Forwarding option to make sure you cant accidentally not save your custom SMTP settings
+- changed GNTP forwarding to always encrypt messages (defaults to SHA256/AES)
+- fixed a regression bug introduced in RC2 that caused decryption of encrypted requests to corrupt some data (thanks to Laurent)
+- fixed a bug that could cause Growl to hang when shutting down
+- fixed a bug in the 'Notify' display style that could cut off the last line of text
+- fixed a bug in Feed Monitor that prevented it from correctly parsing dates with timezones other than GMT
+
+RC3 changes
+------------------------------
+- updated/added support for localization; Dutch, Japanese, German, Norwegian
+- added click-to-install support for language packs
+- added ability to set default display by double-clicking its name in the list
+- updated GrowlConnector to automatically strip '\r' characters from header values
+- fixed a bug in ConnectorBase that didnt handle chunked responses properly (thanks to Rudy @ Growl)
+- fixed several bugs that could cause subscription renewals to fire too often
+- fixed a bug that caused ListControl headers to redraw improperly (thanks FrozenCow)
+- fixed a bug that could crash Growl if a non-existent file path url callback is encountered
+- fixed a bug that could cause an OutOfMemoryException when closing down Growl
+
+RC2 changes
+------------------------------
+- added 'Origin' column to History Detail view
+- removed built-in displays from showing up in the Alt-Tab list
+- fixed a bug that didnt allow loading dependent libraries from external displays
+- fixed a bug that didnt handle some types of .ico files as valid images
+- fixed the 'object is currently in use somewhere else' exception (again)
+- fixed a bug that did not honor the 'Never consider me idle' setting if the computer had been locked previously
+- fixed a bug that caused a crash when lots of subscribers came online
+- fixed a bug that failed to forward notifications that originated over UDP
+- fixed a bug that caused keyboard shortcuts to not work
+- updated click-to-install protocol handler to workaround bug in Google Chrome browser (http://code.google.com/p/chromium/issues/detail?id=160)
+- return more descriptive error message for 'MALFORMED REQUEST' errors
+- moved call to IDisplay.Load to after SettingsPanel has been configured
+
+RC1/Beta 21 changes
+------------------------------
+- replaced entire Bonjour implementation - hopefully solves the dnssd.dll crashes
+- replaced global keyboard hook code with RegisterHotKey (no functional change, just better - thanks Jaykul)
+- now automatically create the default proxy.config file on install
+- fixed the 'object is currently in use somewhere else' exception
+- fixed a bug that caused 'click-to-install' definition files to be considered invalid if not ASCII encoded
+- fixed a bug that sometimes causes 'click-to-install' downloads to hang
+- fixed messed up rendering of text in dialogs during 'click-to-install' process
+- fixed a bug that caused a crash if a saved History item was corrupted
+- fixed a bug that caused password changes to be lost if GfW was not shut down properly
+- updated growlnotify to send filesystem-based images as binary data (url-based images are still sent as urls)
+- fixed a bug in growlnotify if an empty /cu: parameter was passed
+
+Beta 20 changes
+------------------------------
+- improved History tab: added detail view and filtering capability
+- added better proxy support, including support for custom authentication (though still manually configured)
+- changed the Growl.CoreLibrary and Growl.Connector assemblies to compile for AnyCPU instead of x86, so they should work in 64-bit apps now
+- updated the CallbackContext class' interface to be more intuitive and easier to use
+- added the ability to specify relative icon paths in growlnotify
+- added /silent switch to growlnotify to suppress all output
+- removed /cc switch from growlnotify (since it is not used)
+- fixed a bug that caused Notification-Callback-Target headers to be ignored
+- fixed a bug that incorrectly required setting Notification-Callback-Context and Notification-Callback-Context-Type for url callbacks
+- fixed a bug that caused Subscriptions to generate multiple entries in the origin machine's Forward list
+- fixed a bug that could cause subscription passwords to show up in the Password Manager
+- fixed a bug that could cause passwords to become 'stuck' in the Password Manager
+- fixed a bug that could crash Growl if a url-based image was not available
+- fixed a bug in the Outlook Add-in that wouldnt show a notification if the email subject was empty
+- fixed a bug in the Outlook Add-in that didnt notify on new meeting requests
+- updated Google Voice Greasemonkey script to show full SMS or Voicemail message text
+
+Beta 19 changes
+------------------------------
+- added email forwarding option
+- updated url callback handling to be compatible with current GNTP spec (open url using GET, no notification data appeneded, on click only)
+- improved Prowl and Twitter forwarding mechanism to be more robust
+- fixed a bug that caused Growl to never consider you idle if your preference was set over 59 seconds
+- fixed a bug that caused disabled forwarding entries to sometimes show as enabled (but still act disabled)
+- fixed a bug that caused per-notification forwarding preferences to overwrite the default forwarding preferences
+- fixed a bug that caused Prowl notifications to infrequently be dropped
+- fixed a bug related to display SettingsPanel being instantiated twice
+- fixed some bugs related to disabled subscriptions
+- updated growlnotify to allow registering multiple notification types
+- added HTTP Monitoring to System Monitor
+
+Beta 18 changes
+------------------------------
+- fixed a bug in Detector.DetectIfGrowlIsRunning() that could cause a crash
+- fixed a bug that caused the 'consider me idle after' value to not be updated when the user entered a new value
+- release Google Voice Greasemonkey script
+- updated Thunderbird extension to use message priorities
+- updated System Monitor with labels, sticky prefs, and origin machine name
+
+Beta 17 changes
+------------------------------
+- updated Prowl integration to use new API
+- added ability to only forward to Prowl when idle
+- added Twitter forwarding option
+- added ability to edit Forward and Subscription entries
+- fixed a bug when hovering over items in the 'Add Computer' windows
+- fixed a bug that could crash Growl if an application registered with no icon
+
+v2.0 Beta 16 changes
+------------------------------
+- added ability to forward notifications to iphones via Prowl
+- fixed a bug that could cause a crash if the system tray icon was double clicked before Growl was done initializing
+- added link to Displays tab for finding and installing additional displays
+
+v2.0 Beta 15 changes
+------------------------------
+- fixed a bug when loading displays that didnt filter out abstract classes
+- now plays the selected sound when selecting the default notification sound
+- updated UI when installing new displays - now shows a notification using the new display upon successful install
+- application list and display list are now alphabetized
+- updated Firefox extension to replace eval() with JSON.parse()
+- updated Visual Studio add-in to add preference to only be notified of the result of the entire solution
+
+v2.0 Beta 14 changes
+------------------------------
+- fixed a bug that caused the links on the About tab to lock up the app
+- updated Visor display to change colors based on Priority
+- fixed a bug that didnt properly handle Priority settings in UDP notifications
+- fixed a bug that crashed Growl if a duplicate password was added
+- fixed a bug that sometimes left sockets open in a FIN_WAIT state
+- lots of memory clean-up
+- updated Firefox, Thunderbird, and Songbird extensions to support UTF-8 characters properly
+- updated Firefox extension to allow Greasemonkey and page-level scripts to send notifications
+- released Pandora and Last.fm Greasemonkey scripts
+
+new displays:
+ - Degree
+ - Notify
+ - Blue Flower
+ - Risor
+ - MiniVisor
+ - Sticky Note
+ - Bubbles
+ - Translucent Dark
+
+v2.0 Beta 13 changes
+------------------------------
+- much faster startup time (displays no longer loaded into seperate AppDomains)
+- seperated out user-installed displays from built-in displays
+- fixed click-to-install display functionality on Vista
+- fixed auto-update bug when updating on Vista (intaller error 2689)
+- fixed a bug that caused GFW to crash if a Subscriber came online while the list of Forward Computers was being rendered
+
+v2.0 Beta 12 changes
+------------------------------
+- added growl:// protocol handler & experimental support for click-to-install displays
+- fixed a bug that crashed Growl when a removed application tried to re-register
+- added a fix so Growl won't crash if an invalid url callback is specified
+- better idle checking
+- ExpandingLabel control now allows setting of TextRenderingHint (anti-aliasing)
+- new iPhone Style display released
+- first release of Gnarly (Growl-Snarl bridge)
+
+v2.0 Beta 11 changes
+------------------------------
+- fixed bug in UserSettingsProvider that caused new installations to crash (cannot find default display)
+
+v2.0 Beta 10 changes
+------------------------------
+- removed splash screen on startup
+- fixed a bug that caused newlines in encrypted requests to be lost/mangled
+- fixed a bug that prevented Growl from starting on some systems (WSAEWOULDBLOCK exception)
+- made a change to save application prefs (and other prefs) as changes are made, not just on app close
+- added some insurance against corrupt user.config files (make backup before save & read from backup on load)
+- added the ability to send line breaks in titles and messages from growlnotify
+- added the ability to pass URL callback from growlnotify
+- changed growlnotify from targeting 'Any CPU' to 'x86' processors (for 64-bit compatibility)
+- changes to growlnotify to make it work better from the command line
+- System Monitor now starts minimized to the system tray
+- released first version of Thunderbird extension
+
+v2.0 Beta 9 changes
+------------------------------
+- added 'Duration' preference to control how long notifications stay on screen
+- fixed a bug with iTunes plugin where it wouldnt show notifications for songs with artwork on Vista
+- fixed a bug that caused requests with multiple binary resources to fail (caused by change in Beta7)
+- added logic to prevent indefinite forwarding loops
+- added new Plain style to the default installation
+
+v2.0 Beta 8 changes
+------------------------------
+- fixed a bug that caused unsaved applications and settings to be lost if an auto-update was performed
+- fixed a bug that showed some notifications as missed even they were not
+- fixed an issue with the auto-updater on Vista failing
+- added ability to mute all sounds
+- ui improvements
+- removed SessionSwitch event monitoring for W2K compatibility
+- growlnotify improvements (deployed as a single file, no command window when called from other apps)
+- updated iTunes plugin to target x86 CPUs (to fix 64-bit issues)
+
+v2.0 Beta 7 changes
+------------------------------
+- fixed notification layout issues when Start bar was in non-standard locations
+- fixed a bug that caused notification icons to be overwritten if an application re-registered
+- fixed Outlook add-in installer to ensure VSTO prerequisite (aka: works better with Office 2007 now)
+
+v2.0 Beta 6 changes
+------------------------------
+- added IsGrowlRunning() method to GrowlConnector class
+- fixed a threading issue in PastNotification class
+- modified 'Check for Updates' code to make sure only one check could occur at a time
+
+v2.0 Beta 5 changes
+------------------------------
+- fixed newlines in localized strings
+- fixed a bug where notifcation priorities were not handled properly
+- fixed a bug in Triple DES decryption (key size was wrong)
+- fixed a bug in the AIR/Flash/Javascript connector when using Triple DES encryption
+- added SHA256 to the available hashing options in the AIR/Flash/Javascript connector
+- fixed a bug the could cause the auto-updater to run too often
+
+v2.0 Beta 4 changes
+------------------------------
+- added support for localization; Dutch and Japanese translations available
+- fixed a bug that caused all encrypted requests to fail
+- fixed a bug that cause the AIR/Flash connector to fail when used with Flash 10
+- should work on 64-bit systems now (changed compiler settings to target x86 instead of AnyCPU)
+- changed default encryption padding scheme to PKCS#7 (PKCS#5)
+- updated AIR and Javascript connectors to the current security implementation
+
+v2.0 Beta 3 changes
+------------------------------
+- fixed bug in ExpandingLabel class that sometimes added newlines in the wrong place
+- fixed a bug that caused notifications received while screen was locked to render as a black spot
+- made Notification-Display-Name header optional (as per GNTP spec)
+- updated GrowlConnector.Notify method interface (Application is no longer required)
+- updated Growl so that it starts minimized to the system tray
+- changed the user-settings folder naming convention for incremental releases
+- improvements to the code that prevents multiple instances from starting
+- various FxCop-suggested modifications
+
+Due to the changes regarding where user settings are stored, all application, notification, forwarding, and password-related settings 
+should be properly retained with the upgrade, but any display preferences from the Beta2 version will be reset with the Beta3 version.
+Going forward, all settings will be retained across upgrades.
+
+v2.0 Beta 1
+------------------------------
+ - entirely new UI
+ - added support for new GNTP (Growl Notification Protocol) for cross-platform compatibility 
+ - support for images in notifications (via GNTP)
+ - supports sending callbacks when a notification is clicked/closed (via GNTP)
+ - added ability to initiate notification forwarding from the receiving client (subscriptions)
+ - added keyboard shortcuts for closing last notification and closing all notifications
+ - right-click immediately closes notification
+ - new History feature that records all notifications 
+ - new Missed Notifications summary 
+ - added Bonjour support to enable automatic discovery of other Growl instances on your network (PC or Mac) 
+ - new Smokestack and Plain displays; improved Standard and Visor displays 
+ - added idle/away detection
+ - support for playing sounds when notifications arrive
+ - Password Manager allows multiple passwords (can be used for individual applications, etc)
+ - 'click-to-install' displays from the internet
+ - fixed a bug in the UDP connector that incorrectly handled the length of 2-byte UTF-8 strings (thanks to snaka.gml for reporting)
+ - fixed a bug where growl was not always properly shutdown when exiting
+ - removed support for WebKit-based displays
+ EXTRAS::
+ - plug-ins for Outlook (2003/2007), Visual Studio (2005/2008), and iTunes 
+ - iRate for ITunes display
+ - complete developer SDK for creating custom displays 
+
+v1.2.1.1
+------------------------------
+ - now starts up in the system tray only (doesn't initially show the control form)
+ - most displays now support a simple stacking routine so multiple notifications dont show up on top of each other (all Webkit-based displays as well as the Simple display) 
+ - the Simple display's visual style has been updated (hopefully improved)
+ - fixed bug in SimpleWindow labels where ampersands were not displaying correctly (UseMnemonic)
+ - added a base Form class to Growl.Display; changed other styles to inherit from this class
+
+v1.2.1
+------------------------------
+ - released as open source under BSD license on Google Code: http://code.google.com/p/growl-for-windows/
+ - minor code clean-up and refactoring
+
+v1.2.0
+------------------------------
+ - added ability to receive notifications from web applications
+ - fixed a bug the didnt always save user settings when the application was shutdown
+ - added 'Preview' button to Display configuration screen
+ - internal refactoring to better seperate and control how notifications from different sources are handled (local apps, network apps, websites)
+
+v1.1.0
+------------------------------
+ - created IDisplay/Display interface for building custom display plugins
+ - updated main program code to load/handle display plugins as well as user-configurable settings
+ - re-wrote WebKit-based display to use the IDisplay interface
+ - created sample EmailDisplay to forward notifications to an email address
+ - created sample Visor display as an example of a custom display plugin
+ - fixed a bug where multiple instances of Growl could be started simultaneously
+
+v1.0.1
+------------------------------
+ - notification sticky override
+ - handle line breaks in WebKit-based displays
+ - created new installer that handles WebKit COM dependencies and initial Display styles
+ - changed location of 'user.config', 'application.settings', and 'forward.settings' files to Application.LocalUserAppDataPath
+ - fixed bug with notification list that occurred if the parent application item was deselected
+
+v1.0.0 (initial release)
+------------------------------
+ - taskbar icon
+ - start/stop service
+ - autostart at login
+ - default display type
+ - application display override
+ - notification display & priority overrides
+ - listen for network notifications
+ - accept remote registrations
+ - forward notifications
+ - about
+ 
+ inspiration:
+ "@everyone who wants a windows port - I've humored this for years. I no longer care to. 
+ If someone wants to do it, that'd be great. Snarl is probably your best bet though."
+ - Chris Forsythe (http://brok3n.org/archivesextreme/growl/index.html)
