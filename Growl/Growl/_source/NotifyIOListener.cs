@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Growl
@@ -13,37 +11,20 @@ namespace Growl
         public event EventHandler Disconnected;
         public event EventHandler<NotificationReceivedEventArgs> NotificationReceived;
 
-        private string outletUrl;
-        private bool autoReset = true;
-        private ISynchronizeInvoke synchronizingObject;
+        private readonly ISynchronizeInvoke synchronizingObject;
         CometClient comet;
         private bool isStopping;
 
         public NotifyIOListener(string outletUrl, ISynchronizeInvoke synchronizingObject)
         {
-            this.outletUrl = outletUrl;
+            AutoReset = true;
+            this.OutletUrl = outletUrl;
             this.synchronizingObject = synchronizingObject;
         }
 
-        public string OutletUrl
-        {
-            get
-            {
-                return this.outletUrl;
-            }
-        }
+        public string OutletUrl { get; private set; }
 
-        public bool AutoReset
-        {
-            get
-            {
-                return this.autoReset;
-            }
-            set
-            {
-                this.autoReset = value;
-            }
-        }
+        public bool AutoReset { get; set; }
 
         public void Start()
         {
@@ -55,15 +36,15 @@ namespace Growl
                 //string url = "http://api.notify.io/v1/listen/a56bd4435f989f8d7447f737e24991519ea94652";
                 //http://www.notify.io/outlets/a56bd4435f989f8d7447f737e24991519ea94652.ListenURL
 
-                string url = this.outletUrl;
+                string url = this.OutletUrl;
 
                 if (this.comet == null)
                 {
                     this.comet = new CometClient(url);
-                    comet.InvalidUrl += new EventHandler(comet_InvalidUrl);
-                    comet.Connected += new EventHandler(comet_Connected);
-                    comet.Disconnected += new EventHandler(comet_Disconnected);
-                    comet.ResponseReceived += new CometClient.ResponseReceivedEventHandler(comet_ResponseReceived);
+                    comet.InvalidUrl += this.comet_InvalidUrl;
+                    comet.Connected += this.comet_Connected;
+                    comet.Disconnected += this.comet_Disconnected;
+                    comet.ResponseReceived += this.comet_ResponseReceived;
                 }
 
                 StartCometClient(comet, 0);
@@ -76,10 +57,10 @@ namespace Growl
             {
                 this.isStopping = true;
                 this.comet.Stop();
-                this.comet.InvalidUrl -= new EventHandler(comet_InvalidUrl);
-                this.comet.Connected -= new EventHandler(comet_Connected);
-                this.comet.Disconnected -= new EventHandler(comet_Disconnected);
-                this.comet.ResponseReceived -= new CometClient.ResponseReceivedEventHandler(comet_ResponseReceived);
+                this.comet.InvalidUrl -= this.comet_InvalidUrl;
+                this.comet.Connected -= this.comet_Connected;
+                this.comet.Disconnected -= this.comet_Disconnected;
+                this.comet.ResponseReceived -= this.comet_ResponseReceived;
                 this.comet.Dispose();
                 this.comet = null;
             }
@@ -129,7 +110,7 @@ namespace Growl
 
         private void StartCometClientAsync(object state)
         {
-            CometClient client = (CometClient)state;
+            var client = (CometClient)state;
             client.Stop();
             client.Start();
         }
@@ -143,7 +124,7 @@ namespace Growl
         {
             try
             {
-                string response = (string)state;
+                var response = (string)state;
                 Utility.WriteDebugInfo(response);
 
                 if (String.IsNullOrEmpty(response)) return;  // empty response
@@ -170,13 +151,17 @@ namespace Growl
                 NotificationReceivedEventArgs args = (NotificationReceivedEventArgs)obj;
                  * */
 
-                System.IO.StringReader sr = new System.IO.StringReader(json);
+                var sr = new System.IO.StringReader(json);
                 using (sr)
                 {
-                    Newtonsoft.Json.JsonSerializer js = new Newtonsoft.Json.JsonSerializer();
-                    js.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
-                    js.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
-                    NotificationReceivedEventArgs args = (NotificationReceivedEventArgs) js.Deserialize(sr, typeof(NotificationReceivedEventArgs));
+                    var js = new Newtonsoft.Json.JsonSerializer
+                             {
+                                 MissingMemberHandling =
+                                     Newtonsoft.Json.MissingMemberHandling.Ignore,
+                                 NullValueHandling =
+                                     Newtonsoft.Json.NullValueHandling.Ignore
+                             };
+                    var args = (NotificationReceivedEventArgs) js.Deserialize(sr, typeof(NotificationReceivedEventArgs));
                     this.OnNotificationReceived(args);
                 }
             }
@@ -192,10 +177,7 @@ namespace Growl
             {
                 if (this.synchronizingObject != null && this.synchronizingObject.InvokeRequired)
                 {
-                    this.synchronizingObject.Invoke(new MethodInvoker(delegate()
-                    {
-                        OnInvalidUrl();
-                    }), null);
+                    this.synchronizingObject.Invoke(new MethodInvoker(this.OnInvalidUrl), null);
                 }
                 else
                 {
@@ -206,53 +188,52 @@ namespace Growl
 
         protected void OnConnected()
         {
-            if (this.Connected != null)
+            if (this.Connected == null)
             {
-                if(this.synchronizingObject != null && this.synchronizingObject.InvokeRequired)
-                {
-                    this.synchronizingObject.Invoke(new MethodInvoker(delegate(){
-                        OnConnected();
-                    }), null);
-                }
-                else
-                {
-                    this.Connected(this, EventArgs.Empty);
-                }
+                return;
+            }
+
+            if(this.synchronizingObject != null && this.synchronizingObject.InvokeRequired)
+            {
+                this.synchronizingObject.Invoke(new MethodInvoker(this.OnConnected), null);
+            }
+            else
+            {
+                this.Connected(this, EventArgs.Empty);
             }
         }
 
         protected void OnDisconnected()
         {
-            if (this.Disconnected != null)
+            if (this.Disconnected == null)
             {
-                if(this.synchronizingObject != null && this.synchronizingObject.InvokeRequired)
-                {
-                    this.synchronizingObject.Invoke(new MethodInvoker(delegate(){
-                        OnDisconnected();
-                    }), null);
-                }
-                else
-                {
-                    this.Disconnected(this, EventArgs.Empty);
-                }
+                return;
+            }
+
+            if(this.synchronizingObject != null && this.synchronizingObject.InvokeRequired)
+            {
+                this.synchronizingObject.Invoke(new MethodInvoker(this.OnDisconnected), null);
+            }
+            else
+            {
+                this.Disconnected(this, EventArgs.Empty);
             }
         }
 
         protected void OnNotificationReceived(NotificationReceivedEventArgs nrea)
         {
-            if (this.NotificationReceived != null)
+            if (this.NotificationReceived == null)
             {
-                if (this.synchronizingObject != null && this.synchronizingObject.InvokeRequired)
-                {
-                    this.synchronizingObject.Invoke(new MethodInvoker(delegate()
-                    {
-                        OnNotificationReceived(nrea);
-                    }), null);
-                }
-                else
-                {
-                    this.NotificationReceived(this, nrea);
-                }
+                return;
+            }
+
+            if (this.synchronizingObject != null && this.synchronizingObject.InvokeRequired)
+            {
+                this.synchronizingObject.Invoke(new MethodInvoker(() => this.OnNotificationReceived(nrea)), null);
+            }
+            else
+            {
+                this.NotificationReceived(this, nrea);
             }
         }
 
